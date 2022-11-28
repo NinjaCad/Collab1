@@ -18,11 +18,8 @@ public class GunScript : MonoBehaviour
         worldPos = Camera.main.ScreenToWorldPoint(screenPos);
         mousePos = new Vector3((Mathf.Round(worldPos.x)), (Mathf.Round(worldPos.y)), 0);
         
-        if (dir != null)
-        {
-            dir = mousePos - this.transform.position;
-            angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        }
+        dir = mousePos - this.transform.position;
+        angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
     }
 }

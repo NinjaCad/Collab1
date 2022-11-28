@@ -25,6 +25,9 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] float power;
     [SerializeField] float resistance;
     float velX;
+    float reloadTime;
+    int currentAmmo;
+    [SerializeField] int maxAmmo;
 
 
     void Awake()
@@ -41,9 +44,17 @@ public class PlayerScript : MonoBehaviour
     
     void Update()
     {
+        screenPos = Input.mousePosition;
+        screenPos.z = Camera.main.nearClipPlane + 1;
+        worldPos = Camera.main.ScreenToWorldPoint(screenPos);
+        mousePos = new Vector3((Mathf.Round(worldPos.x)), (Mathf.Round(worldPos.y)), 0);
+        
+        reloadTime -= Time.deltaTime;
+        
         if (isGrounded())
         {
             coyote = 0.10f;
+            currentAmmo = maxAmmo;
         } else
         {
             coyote -= Time.deltaTime;
@@ -65,16 +76,17 @@ public class PlayerScript : MonoBehaviour
         
         velX = Input.GetAxisRaw("Horizontal") * speedX;
 
-        screenPos = Input.mousePosition;
-        screenPos.z = Camera.main.nearClipPlane + 1;
-        worldPos = Camera.main.ScreenToWorldPoint(screenPos);
-        mousePos = new Vector3((Mathf.Round(worldPos.x)), (Mathf.Round(worldPos.y)), 0);
-
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && currentAmmo > 0 && reloadTime < 0f)
         {
             playerToMouse = (mousePos - transform.position) * -1;
             angle = Mathf.Atan2(playerToMouse.y, playerToMouse.x);
             rb.velocity += new Vector2(power * (Mathf.Cos(angle)), power * (Mathf.Sin(angle)));
+            if(rb.velocity.y > 25)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, 25f);
+            }
+            reloadTime = 0.4f;
+            currentAmmo -= 1;
         }
     }
 
