@@ -22,6 +22,8 @@ public class PlayerScript : MonoBehaviour
     float buffer;
     [SerializeField] float jumpSpeed;
     [SerializeField] float speedX;
+    [SerializeField] float power;
+    [SerializeField] float resistance;
     float velX;
 
 
@@ -72,12 +74,12 @@ public class PlayerScript : MonoBehaviour
         {
             playerToMouse = (mousePos - transform.position) * -1;
             angle = Mathf.Atan2(playerToMouse.y, playerToMouse.x);
-            rb.velocity += new Vector2(25 * (Mathf.Cos(angle)), 25 * (Mathf.Sin(angle)));
+            rb.velocity += new Vector2(power * (Mathf.Cos(angle)), power * (Mathf.Sin(angle)));
         }
     }
 
     void FixedUpdate()
     {
-        rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, velX, 0.05f), rb.velocity.y);
+        rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, velX, resistance), rb.velocity.y);
     }
 }
