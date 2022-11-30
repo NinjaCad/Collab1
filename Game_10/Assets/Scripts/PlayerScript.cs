@@ -19,7 +19,10 @@ public class PlayerScript : MonoBehaviour
     float angle;
     
     float coyote;
+    float wallCoyote;
+    float wallJumpDirection;
     float buffer;
+    float jumpTimer;
     [SerializeField] float jumpSpeed;
     [SerializeField] float speedX;
     [SerializeField] float power;
@@ -29,7 +32,8 @@ public class PlayerScript : MonoBehaviour
     int currentAmmo;
     [SerializeField] int maxAmmo;
 
-    [SerializeField] float wallSlidingSpeed;
+    float wallSlidingSpeed;
+    [SerializeField] float startingWallSlidingSpeed;
 
     void Awake()
     {
@@ -45,6 +49,8 @@ public class PlayerScript : MonoBehaviour
         mousePos = new Vector3((Mathf.Round(worldPos.x)), (Mathf.Round(worldPos.y)), 0);
 
         velX = Input.GetAxisRaw("Horizontal");
+
+        jumpTimer -= Time.deltaTime;
 
         if (isGrounded())
         {
@@ -63,11 +69,13 @@ public class PlayerScript : MonoBehaviour
             buffer -= Time.deltaTime;
         }
 
-        if (coyote > 0f && buffer > 0f)
+        if (coyote > 0f && buffer > 0f && jumpTimer < 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
             buffer = 0f;
+            coyote = 0f;
             reloadTime = 0f;
+            jumpTimer = 0.15f;
         }
 
         if(Input.GetMouseButtonDown(0) && currentAmmo > 0 && reloadTime <= 0f)
@@ -89,11 +97,22 @@ public class PlayerScript : MonoBehaviour
         if (isWalled() == true && isGrounded() == false && velX != 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+            wallSlidingSpeed += 0.02f;
+            wallCoyote = 0.1f;
+            wallJumpDirection = velX;
+            
+        } else if(isWalled() == false)
+        {
+            wallSlidingSpeed = startingWallSlidingSpeed;
+            wallCoyote -= Time.deltaTime;
+        }
 
-            if (Input.GetButtonDown("Jump"))
-            {
-                rb.velocity = new Vector2(-15f * velX, jumpSpeed);
-            }
+        if (buffer > 0f && wallCoyote > 0f && jumpTimer < 0)
+        {
+            rb.velocity = new Vector2(-15f * wallJumpDirection, jumpSpeed);
+            buffer = 0f;
+            wallCoyote = 0f;
+            jumpTimer = 0.15f;
         }
 
         if (velX > 0)
@@ -108,7 +127,7 @@ public class PlayerScript : MonoBehaviour
 
     bool isGrounded()
     {
-        raycast = Physics2D.BoxCast(new Vector2(transform.position.x, transform.position.y - 0.505f), new Vector3(1f, 0.01f, 1f), 0f, Vector2.down, 0f, collisionLayers);
+        raycast = Physics2D.BoxCast(new Vector2(transform.position.x, transform.position.y - 0.505f), new Vector3(0.95f, 0.01f, 1f), 0f, Vector2.down, 0f, collisionLayers);
         return raycast.collider != null;
     }
 
