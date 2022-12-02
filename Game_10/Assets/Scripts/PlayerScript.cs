@@ -82,7 +82,7 @@ public class PlayerScript : MonoBehaviour
         {
             playerToMouse = (mousePos - transform.position) * -1;
             angle = Mathf.Atan2(playerToMouse.y, playerToMouse.x);
-            rb.velocity += new Vector2(power * (Mathf.Cos(angle)), power * (Mathf.Sin(angle)));
+            rb.velocity = new Vector2(power * (Mathf.Cos(angle)), power * (Mathf.Sin(angle)));
             if(rb.velocity.y > 25)
             {
                 rb.velocity = new Vector2(rb.velocity.x, 25f);
@@ -114,20 +114,11 @@ public class PlayerScript : MonoBehaviour
             wallCoyote = 0f;
             jumpTimer = 0.15f;
         }
-
-        if (velX > 0)
-        {
-            transform.localScale = new Vector2(1, transform.localScale.y);
-        }
-        if (velX < 0)
-        {
-            transform.localScale = new Vector2(-1, transform.localScale.y);
-        }
     }
 
     bool isGrounded()
     {
-        raycast = Physics2D.BoxCast(new Vector2(transform.position.x, transform.position.y - 0.505f), new Vector3(0.95f, 0.01f, 1f), 0f, Vector2.down, 0f, collisionLayers);
+        raycast = Physics2D.BoxCast(new Vector2(transform.position.x, transform.position.y - 0.55f), new Vector3(0.95f, 0.1f, 1f), 0f, Vector2.down, 0f, collisionLayers);
         return raycast.collider != null;
     }
 

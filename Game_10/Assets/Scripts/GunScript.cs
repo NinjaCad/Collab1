@@ -19,7 +19,9 @@ public class GunScript : MonoBehaviour
         mousePos = new Vector3((Mathf.Round(worldPos.x)), (Mathf.Round(worldPos.y)), 0);
         
         dir = mousePos - this.transform.position;
-        angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+        angle = Mathf.Atan2(dir.y, dir.x);
+        transform.rotation = Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward);
+        transform.position = transform.parent.position;
+        transform.position += new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
     }
 }
